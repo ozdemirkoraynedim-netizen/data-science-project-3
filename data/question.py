@@ -9,14 +9,21 @@ def connect_db():
     port=5432,
     database="postgres",
     user="postgres",
-    password=password)
+    password="postgres")
     return conn
 
 # DATE_TRUNC ile ay bazlı kayıt sayılarını listele
 def question_1_query():
     connection = connect_db()
     cursor = connection.cursor()
-    cursor.execute('')
+    cursor.execute("""
+    SELECT
+        DATE_TRUNC('month', enrollment_date) AS month,
+        COUNT(*) AS count
+    FROM enrollments
+    GROUP BY DATE_TRUNC('month', enrollment_date)
+    ORDER BY month;
+""")
     data = cursor.fetchall()
     cursor.close()
     connection.close()
@@ -27,7 +34,10 @@ def question_1_query():
 def question_2_query():
     connection = connect_db()
     cursor = connection.cursor()
-    cursor.execute('')
+    cursor.execute("""
+    SELECT DATE_PART('year', enrollment_date) AS year
+    FROM enrollments;
+""")
     data = cursor.fetchall()
     cursor.close()
     connection.close()
@@ -38,7 +48,10 @@ def question_2_query():
 def question_3_query():
     connection = connect_db()
     cursor = connection.cursor()
-    cursor.execute('')
+    cursor.execute("""
+    SELECT SUM(age)
+    FROM students;
+""")
     data = cursor.fetchall()
     cursor.close()
     connection.close()
@@ -49,7 +62,10 @@ def question_3_query():
 def question_4_query():
     connection = connect_db()
     cursor = connection.cursor()
-    cursor.execute('')
+    cursor.execute("""
+    SELECT COUNT(course_id)
+    FROM courses;
+""")
     data = cursor.fetchall()
     cursor.close()
     connection.close()
@@ -60,7 +76,15 @@ def question_4_query():
 def question_5_query():
     connection = connect_db()
     cursor = connection.cursor()
-    cursor.execute('')
+    cursor.execute("""
+    SELECT *
+    FROM students
+    WHERE age > (
+        SELECT AVG(age)
+        FROM students
+    )
+    ORDER BY student_id;
+""")
     data = cursor.fetchall()
     cursor.close()
     connection.close()
@@ -71,7 +95,14 @@ def question_5_query():
 def question_6_query():
     connection = connect_db()
     cursor = connection.cursor()
-    cursor.execute('')
+    cursor.execute("""
+    SELECT
+        course_id,
+        MIN(enrollment_date) AS first_enrollment
+    FROM enrollments
+    GROUP BY course_id
+    ORDER BY course_id;
+""")
     data = cursor.fetchall()
     cursor.close()
     connection.close()
@@ -83,7 +114,18 @@ def question_6_query():
 def question_7_query():
     connection = connect_db()
     cursor = connection.cursor()
-    cursor.execute('')
+    cursor.execute("""
+    SELECT
+        c.course_name,
+        AVG(s.age) AS avg_age
+    FROM enrollments e
+    JOIN students s
+        ON e.student_id = s.student_id
+    JOIN courses c
+        ON e.course_id = c.course_id
+    GROUP BY c.course_name
+    ORDER BY c.course_name;
+""")
     data = cursor.fetchall()
     cursor.close()
     connection.close()
@@ -94,7 +136,10 @@ def question_7_query():
 def question_8_query():
     connection = connect_db()
     cursor = connection.cursor()
-    cursor.execute('')
+    cursor.execute("""
+    SELECT MIN(age)
+    FROM students;
+""")
     data = cursor.fetchall()
     cursor.close()
     connection.close()
@@ -104,7 +149,16 @@ def question_8_query():
 def question_9_query():
     connection = connect_db()
     cursor = connection.cursor()
-    cursor.execute("""""")
+    cursor.execute("""
+    SELECT
+        c.course_name,
+        COUNT(e.student_id) AS student_count
+    FROM courses c
+    JOIN enrollments e
+        ON c.course_id = e.course_id
+    GROUP BY c.course_name
+    ORDER BY c.course_name;
+""")
     data = cursor.fetchall()
     cursor.close()
     connection.close()
@@ -115,7 +169,13 @@ def question_9_query():
 def question_10_query():
     connection = connect_db()
     cursor = connection.cursor()
-    cursor.execute("""""")
+    cursor.execute("""
+    SELECT DISTINCT c.course_name
+    FROM courses c
+    JOIN enrollments e
+        ON c.course_id = e.course_id
+    ORDER BY c.course_name;
+""")
     data = cursor.fetchall()
     cursor.close()
     connection.close()
